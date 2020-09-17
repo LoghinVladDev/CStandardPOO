@@ -1,36 +1,46 @@
 #include <stdio.h>
 #include <pthread.h>
 #include <thread_module/my_thread.h>
+#include <unistd.h>
 
-static void * thSt ( void * arg ) {
-    int x = *((int * ) arg);
-}
+Thread thread1;
+Thread thread2;
 
-void threadStartPlusPlus ( int argc, char ** argv ) {
+void threadFunction () {
+    printf("Coaie\n");
 
-    for (int i = 0; i < argc; ++i) {
-        printf("Argument %d is %s\n", i, argv[i]);
+    fflush(stdout);
+    printf("eh\n");
+
+    while ( 1 ) {
+        lock(thread1);
+        unlock(thread1);
     }
-
 }
 
+void thread2f () {
+    sleep( 1);
 
+    lock( thread1 );
+
+    printf("stop\n");
+    fflush(stdout);
+
+    sleep(1);
+
+    unlock ( thread1 );
+}
 
 int main() {
 
-    Thread threadID;
+    initThreadModule();
 
-    // createThread ( & threadID, thSt, argc, argv );
+    createThread ( & thread1, threadFunction );
 
-    int argc = 2;
-    char * argv [] = {
-            "pasta",
-            "de dinti"
-    };
+    createCLIAdminThread();
 
-    createThread( & threadID, threadStartPlusPlus, argc, argv );
+    while ( isAdminThreadRunning() );
 
-    while(1);
-
+    stopThreadModule();
 
 }

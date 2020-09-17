@@ -21,8 +21,70 @@ typedef short sint16;
 typedef int sint32;
 typedef long long sint64;
 
-typedef pthread_t Thread;
+typedef uint64 Thread;
 
-int createThread ( Thread *, void (*)(int, char** ), int, char ** ) ;
+typedef enum {
+    THREAD_STRUCTURE_TYPE_CREATE_INFO_ARGS,
+    THREAD_STRUCTURE_TYPE_CREATE_INFO_FORMAT,
+    THREAD_STRUCTURE_TYPE_CREATE_INFO_ARG_PTR,
+    THREAD_STRUCTURE_TYPE_CREATE_INFO_NO_ARGS
+} ThreadStructureType;
+
+typedef struct {
+    ThreadStructureType sType;
+    Thread ID;
+    int argc;
+    char ** argv;
+    void (* pFunc) (uint32, char **);
+} ThreadCreateInfoArgs;
+
+typedef struct {
+    ThreadStructureType sType;
+    Thread ID;
+    const char * format;
+    char * argString;
+    void (* pFunc) ( const char *, char * );
+} ThreadCreateInfoFormat;
+
+typedef struct {
+    ThreadStructureType sType;
+    Thread ID;
+    void (* pFunc) ( void );
+} ThreadCreateInfoNoArgs;
+
+typedef struct {
+    ThreadStructureType sType;
+    Thread ID;
+    void (* pFunc) (void *);
+    void * data;
+} ThreadCreateInfoArgPtr;
+
+typedef enum {
+    THREAD_SUCCESS,
+    THREAD_NODE_NOT_EXIST,
+    THREAD_ARG_NULL,
+    THREAD_MAX_CREATED
+} ThreadResult;
+
+ThreadResult initThreadModule ();
+ThreadResult stopThreadModule ();
+
+ThreadResult createThreadArgs ( Thread *, void (*)(int, char** ), int, char ** ) ;
+ThreadResult createThreadF ( Thread *, void (*)(const char *), const char*, ... );
+ThreadResult threadScanF ( Thread, const char*, ... );
+ThreadResult createThread ( Thread *, void (*)(void) );
+ThreadResult createThreadArgPtr ( Thread *, void (*)(void *), void * );
+ThreadResult createCLIAdminThread ();
+uint8        isAdminThreadRunning ();
+
+ThreadResult setArgument ( Thread, void *, uint64 );
+ThreadResult getArgument ( Thread, void *, uint64 );
+ThreadResult lock ( Thread );
+ThreadResult unlock ( Thread );
+
+ThreadResult killThread ( Thread );
+ThreadResult stopThread ( Thread );
+
+void threadPrintf ( const char *, ... );
 
 #endif //UNTITLED2_MY_THREAD_H
