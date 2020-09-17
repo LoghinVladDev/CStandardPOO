@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/Vlad/CLionProjects/untitled2/obj/thread_module/my_thread.c
+malloc.h
+-
+string.h
+-
+my_thread.h
+C:/Users/Vlad/CLionProjects/untitled2/obj/thread_module/my_thread.h
+my_thread_defs.h
+C:/Users/Vlad/CLionProjects/untitled2/obj/thread_module/my_thread_defs.h
+
+C:/Users/Vlad/CLionProjects/untitled2/obj/thread_module/my_thread.h
+pthread.h
+-
+
+C:/Users/Vlad/CLionProjects/untitled2/obj/thread_module/my_thread_defs.h
+

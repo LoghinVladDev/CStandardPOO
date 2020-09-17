@@ -1,0 +1,1 @@
+/usr/bin/cc -g   CMakeFiles/exec2.dir/main2.c.o  -o exec2 

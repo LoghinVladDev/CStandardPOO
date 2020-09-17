@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/Vlad/CLionProjects/untitled2/main.c
+stdio.h
+-
+unHeaderDubios.h
+C:/Users/Vlad/CLionProjects/untitled2/unHeaderDubios.h
+pthread.h
+-
+stdbool.h
+-
+
+C:/Users/Vlad/CLionProjects/untitled2/nisteFunctii.c
+stdio.h
+-
+unHeaderDubios.h
+C:/Users/Vlad/CLionProjects/untitled2/unHeaderDubios.h
+
+C:/Users/Vlad/CLionProjects/untitled2/unHeaderDubios.h
+
