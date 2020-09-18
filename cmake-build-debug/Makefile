@@ -263,6 +263,33 @@ obj/thread_module/my_thread.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\untitled2.dir\build.make CMakeFiles/untitled2.dir/obj/thread_module/my_thread.c.s
 .PHONY : obj/thread_module/my_thread.c.s
 
+obj/thread_module/threadClass.obj: obj/thread_module/threadClass.cpp.obj
+
+.PHONY : obj/thread_module/threadClass.obj
+
+# target to build an object file
+obj/thread_module/threadClass.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\untitled2.dir\build.make CMakeFiles/untitled2.dir/obj/thread_module/threadClass.cpp.obj
+.PHONY : obj/thread_module/threadClass.cpp.obj
+
+obj/thread_module/threadClass.i: obj/thread_module/threadClass.cpp.i
+
+.PHONY : obj/thread_module/threadClass.i
+
+# target to preprocess a source file
+obj/thread_module/threadClass.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\untitled2.dir\build.make CMakeFiles/untitled2.dir/obj/thread_module/threadClass.cpp.i
+.PHONY : obj/thread_module/threadClass.cpp.i
+
+obj/thread_module/threadClass.s: obj/thread_module/threadClass.cpp.s
+
+.PHONY : obj/thread_module/threadClass.s
+
+# target to generate assembly for a file
+obj/thread_module/threadClass.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\untitled2.dir\build.make CMakeFiles/untitled2.dir/obj/thread_module/threadClass.cpp.s
+.PHONY : obj/thread_module/threadClass.cpp.s
+
 # Help Target
 help:
 	@echo The following are some of the valid targets for this Makefile:
@@ -285,6 +312,9 @@ help:
 	@echo ... obj/thread_module/my_thread.obj
 	@echo ... obj/thread_module/my_thread.i
 	@echo ... obj/thread_module/my_thread.s
+	@echo ... obj/thread_module/threadClass.obj
+	@echo ... obj/thread_module/threadClass.i
+	@echo ... obj/thread_module/threadClass.s
 .PHONY : help
 
 

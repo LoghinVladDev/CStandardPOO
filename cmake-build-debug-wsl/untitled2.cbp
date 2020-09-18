@@ -45,6 +45,9 @@
 				<Option compiler="gcc"/>
 				<Compiler>
 					<Add directory="/mnt/c/Users/Vlad/CLionProjects/untitled2/obj"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
 					<Add directory="/usr/local/include"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
@@ -66,6 +69,9 @@
 				<Option compiler="gcc"/>
 				<Compiler>
 					<Add directory="/mnt/c/Users/Vlad/CLionProjects/untitled2/obj"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
 					<Add directory="/usr/local/include"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
@@ -87,6 +93,9 @@
 				<Option compiler="gcc"/>
 				<Compiler>
 					<Add directory="/mnt/c/Users/Vlad/CLionProjects/untitled2/obj"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
 					<Add directory="/usr/local/include"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
@@ -108,6 +117,9 @@
 				<Option compiler="gcc"/>
 				<Compiler>
 					<Add directory="/mnt/c/Users/Vlad/CLionProjects/untitled2/obj"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
 					<Add directory="/usr/local/include"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
@@ -138,6 +150,12 @@
 			<Option target="untitled2"/>
 		</Unit>
 		<Unit filename="/mnt/c/Users/Vlad/CLionProjects/untitled2/obj/thread_module/my_thread_defs.h">
+			<Option target="untitled2"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/Vlad/CLionProjects/untitled2/obj/thread_module/threadClass.cpp">
+			<Option target="untitled2"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/Vlad/CLionProjects/untitled2/obj/thread_module/threadClass.h">
 			<Option target="untitled2"/>
 		</Unit>
 		<Unit filename="/mnt/c/Users/Vlad/CLionProjects/untitled2/unHeaderDubios.h">

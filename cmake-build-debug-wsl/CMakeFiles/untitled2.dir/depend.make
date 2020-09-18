@@ -11,3 +11,6 @@ CMakeFiles/untitled2.dir/obj/thread_module/my_thread.c.o: ../obj/thread_module/m
 CMakeFiles/untitled2.dir/obj/thread_module/my_thread.c.o: ../obj/thread_module/my_thread.h
 CMakeFiles/untitled2.dir/obj/thread_module/my_thread.c.o: ../obj/thread_module/my_thread_defs.h
 
+CMakeFiles/untitled2.dir/obj/thread_module/threadClass.cpp.o: ../obj/thread_module/threadClass.cpp
+CMakeFiles/untitled2.dir/obj/thread_module/threadClass.cpp.o: ../obj/thread_module/threadClass.h
+

@@ -35,7 +35,7 @@ typedef struct {
     Thread ID;
     int argc;
     char ** argv;
-    void (* pFunc) (uint32, char **);
+    void (* pFunc) (int, char **);
 } ThreadCreateInfoArgs;
 
 typedef struct {
@@ -86,5 +86,7 @@ ThreadResult killThread ( Thread );
 ThreadResult stopThread ( Thread );
 
 void threadPrintf ( const char *, ... );
+void threadPutS ( const char * );
+void threadTryPutS ( const char * );
 
 #endif //UNTITLED2_MY_THREAD_H

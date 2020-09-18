@@ -152,6 +152,12 @@
 		<Unit filename="C:/Users/Vlad/CLionProjects/untitled2/obj/thread_module/my_thread_defs.h">
 			<Option target="untitled2"/>
 		</Unit>
+		<Unit filename="C:/Users/Vlad/CLionProjects/untitled2/obj/thread_module/threadClass.cpp">
+			<Option target="untitled2"/>
+		</Unit>
+		<Unit filename="C:/Users/Vlad/CLionProjects/untitled2/obj/thread_module/threadClass.h">
+			<Option target="untitled2"/>
+		</Unit>
 		<Unit filename="C:/Users/Vlad/CLionProjects/untitled2/unHeaderDubios.h">
 			<Option target="untitled2"/>
 		</Unit>

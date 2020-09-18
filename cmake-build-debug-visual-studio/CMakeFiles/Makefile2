@@ -107,12 +107,12 @@ CMakeFiles\exec2.dir\clean:
 CMakeFiles\untitled2.dir\all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\untitled2.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\untitled2.dir\depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\untitled2.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\untitled2.dir\build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\Vlad\CLionProjects\untitled2\cmake-build-debug-visual-studio\CMakeFiles --progress-num=3,4,5,6 "Built target untitled2"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\Vlad\CLionProjects\untitled2\cmake-build-debug-visual-studio\CMakeFiles --progress-num=3,4,5,6,7 "Built target untitled2"
 .PHONY : CMakeFiles\untitled2.dir\all
 
 # Build rule for subdir invocation for target.
 CMakeFiles\untitled2.dir\rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\Vlad\CLionProjects\untitled2\cmake-build-debug-visual-studio\CMakeFiles 4
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\Vlad\CLionProjects\untitled2\cmake-build-debug-visual-studio\CMakeFiles 5
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 /nologo -$(MAKEFLAGS) CMakeFiles\untitled2.dir\all
 	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\Vlad\CLionProjects\untitled2\cmake-build-debug-visual-studio\CMakeFiles 0
 .PHONY : CMakeFiles\untitled2.dir\rule

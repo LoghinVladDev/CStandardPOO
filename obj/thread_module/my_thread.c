@@ -7,31 +7,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include "my_thread_defs.h"
-//
-//static void* insideCreateThread ( void* arg ) {
-//    ThreadInfo * pArg = (ThreadInfo *) arg;
-//
-//    void (* pFuncCasted) ( int, char** ) = ( void ( * ) (int, char**) ) ( pArg->pFunc );
-//    pFuncCasted( pArg->argc, pArg->argv );
-//
-//    free( pArg );
-//    pthread_cancel( pthread_self() );
-//    return NULL;
-//}
-//
-//ThreadResult createThreadArg ( Thread * pID, void ( * pFunction )(int, char** ), int argc, char ** argv )  {
-//    ThreadInfo * threadInfo = (ThreadInfo * ) malloc(sizeof(ThreadInfo) );
-//
-//    threadInfo->argc = argc;
-//    threadInfo->argv = argv;
-//    threadInfo->pFunc = (void (*)(void))pFunction;
-//
-//    pthread_create( pID, NULL, insideCreateThread, threadInfo );
-//
-//    return 0;
-//}
 
-static void * internalCreateThreadNoArgs ( void* );
 
 typedef struct {
     Thread              ID;
@@ -50,15 +26,31 @@ static struct {
 } adminThreadInfo;
 
 typedef struct _ThreadHandleNode ThreadHandleNode;
-
 typedef ThreadHandleNode * ThreadHandleLinkedList;
 
 static pthread_mutex_t        listLock;
 static pthread_mutex_t        consoleLock;
-
 static ThreadHandleLinkedList threadListHead    = NULL;
+static Thread                 threadCounter     = THREAD_FIRST_ID;
+static Thread                 adminThread       = THREAD_MAX;
 
-static ThreadHandleInfo * getThreadHandleInfo ( Thread ID ) {
+static void             * internalCreateThreadNoArgs ( void* );
+static void             * internalCreateThreadArgs ( void* );
+static void             * internalCreateThreadFormat ( void* );
+static void             * internalCreateThreadArgPtr ( void* );
+static ThreadHandleInfo * getThreadHandleInfo ( Thread );
+static ThreadHandleInfo * createThreadHandleInfo ( Thread );
+static ThreadResult       removeThreadInfo ( Thread );
+static void               clearThreadInfoList ();
+
+static void               printThreadInfo ( const ThreadHandleInfo *, const char * );
+static void               printProcesses ();
+static void               printProcessesNotHidden ();
+static uint8              treadAdminThreadRequest ( const char* );
+static void               printAdminHelpInfo ();
+static void             * adminThreadMain ( void * );
+
+ThreadHandleInfo * getThreadHandleInfo ( Thread ID ) {
     pthread_mutex_lock( & listLock );
 
     ThreadHandleLinkedList headCopy = threadListHead;
@@ -75,7 +67,7 @@ static ThreadHandleInfo * getThreadHandleInfo ( Thread ID ) {
     return NULL;
 }
 
-static ThreadHandleInfo * createThreadHandleInfo ( Thread ID ) {
+ThreadHandleInfo * createThreadHandleInfo ( Thread ID ) {
     pthread_mutex_lock( & listLock );
     ThreadHandleLinkedList newHead = ( ThreadHandleNode * ) malloc ( sizeof ( ThreadHandleNode ) );
 
@@ -92,7 +84,7 @@ static ThreadHandleInfo * createThreadHandleInfo ( Thread ID ) {
     return ( & threadListHead->data );
 }
 
-static ThreadResult removeThreadInfo ( Thread ID ) {
+ThreadResult removeThreadInfo ( Thread ID ) {
     pthread_mutex_lock( & listLock );
     ThreadHandleLinkedList headCopy = threadListHead;
 
@@ -126,7 +118,7 @@ static ThreadResult removeThreadInfo ( Thread ID ) {
     return THREAD_NODE_NOT_EXIST;
 }
 
-static void clearThreadInfoList () {
+void clearThreadInfoList () {
 
     pthread_mutex_lock( & listLock );
     while ( threadListHead != NULL ) {
@@ -192,9 +184,54 @@ ThreadResult unlock ( Thread ID ) {
     return THREAD_SUCCESS;
 }
 
-static Thread threadCounter                     = THREAD_FIRST_ID;
-static Thread adminThread                       = THREAD_MAX;
-static void * adminThreadMain ( void * );
+ThreadResult createThreadArgs ( Thread * pID, void (* pFunc) (int, char**), int argc, char ** argv ) {
+    if ( pID == NULL || pFunc == NULL )
+        return THREAD_ARG_NULL;
+
+    * pID = threadCounter++;
+
+    if ( threadCounter == THREAD_MAX ) {
+        * pID = 0;
+        return THREAD_MAX_CREATED;
+    }
+
+    __auto_type pThreadInfo = createThreadHandleInfo( * pID );
+    __auto_type pThreadCreateInfo = (ThreadCreateInfoArgs *) malloc ( sizeof ( ThreadCreateInfoArgs) );
+
+    pThreadCreateInfo->sType = THREAD_STRUCTURE_TYPE_CREATE_INFO_ARGS;
+    pThreadCreateInfo->pFunc = pFunc;
+    pThreadCreateInfo->ID    = * pID;
+    pThreadCreateInfo->argc  = argc;
+    pThreadCreateInfo->argv  = argv;
+
+    pThreadInfo->createInfo = pThreadCreateInfo;
+
+    pthread_create ( & pThreadInfo->pthreadHandle, NULL, internalCreateThreadArgs, pThreadCreateInfo );
+}
+
+ThreadResult createThreadArgPtr ( Thread * pID, void (*pFunc) (void*), void * pVoidArg ) {
+    if ( pID == NULL || pFunc == NULL )
+        return THREAD_ARG_NULL;
+
+    * pID = threadCounter++;
+
+    if ( threadCounter == THREAD_MAX ) {
+        * pID = 0;
+        return THREAD_MAX_CREATED;
+    }
+
+    __auto_type pThreadInfo = createThreadHandleInfo( * pID );
+    __auto_type pThreadCreateInfo = (ThreadCreateInfoArgPtr *) malloc ( sizeof ( ThreadCreateInfoArgPtr ) );
+
+    pThreadCreateInfo->sType = THREAD_STRUCTURE_TYPE_CREATE_INFO_ARG_PTR;
+    pThreadCreateInfo->pFunc = pFunc;
+    pThreadCreateInfo->ID    = * pID;
+    pThreadCreateInfo->data  = pVoidArg;
+
+    pThreadInfo->createInfo = pThreadCreateInfo;
+
+    pthread_create ( & pThreadInfo->pthreadHandle, NULL, internalCreateThreadArgPtr, pThreadCreateInfo );
+}
 
 ThreadResult createThread ( Thread * pID, void ( * pFunc ) ( void ) ) {
     if ( pID == NULL || pFunc == NULL )
@@ -219,13 +256,13 @@ ThreadResult createThread ( Thread * pID, void ( * pFunc ) ( void ) ) {
     pthread_create ( & pThreadInfo->pthreadHandle, NULL, internalCreateThreadNoArgs, pThreadCreateInfo );
 }
 
-static void printThreadInfo ( const ThreadHandleInfo * pThreadInfo, const char * prefix ) {
+void printThreadInfo ( const ThreadHandleInfo * pThreadInfo, const char * prefix ) {
     printf( "%s[Thread] [ID : %llu] [Type : %s]\n", prefix, pThreadInfo->ID, (pThreadInfo->ID == THREAD_MAX) ? "Admin Thread" : "Regular Thread" );
     fflush(stdout);
 }
 
-static void printProcesses () {
-    pthread_mutex_lock( & consoleLock );
+void printProcesses () {
+//    pthread_mutex_lock( & consoleLock );
     pthread_mutex_lock( & listLock );
     ThreadHandleLinkedList headCopy = threadListHead;
 
@@ -237,17 +274,34 @@ static void printProcesses () {
         headCopy = headCopy->next;
     }
     pthread_mutex_unlock( & listLock );
-    pthread_mutex_unlock( & consoleLock );
+//    pthread_mutex_unlock( & consoleLock );
 }
 
+void printProcessesNotHidden () {
 
-static uint8 treadAdminThreadRequest ( const char* request ) {
+    pthread_mutex_lock( & listLock );
+    ThreadHandleLinkedList headCopy = threadListHead;
+
+    printf("Active Threads : \n");
+
+    while ( headCopy != NULL ) {
+        if ( headCopy->data.ID != THREAD_MAX )
+            printThreadInfo( & headCopy->data, "\t" );
+
+        headCopy = headCopy->next;
+    }
+    pthread_mutex_unlock( & listLock );
+}
+
+uint8 treadAdminThreadRequest ( const char* request ) {
     if ( strcmp ( request, "stop\n" ) == 0 )
         return 0;
 
-    if ( strstr ( request, "ls" ) == request ) {
+    if ( strstr ( request, "ls " ) == request ) {
         if ( strstr ( request, "-a" ) != NULL )
             printProcesses();
+        else if ( strstr ( request , "-A" ) != NULL )
+            printProcessesNotHidden();
     }
 
     if ( strstr ( request, "kill " ) == request ) {
@@ -255,34 +309,70 @@ static uint8 treadAdminThreadRequest ( const char* request ) {
         while ( ! (( * pThreadIDStr >= '0' ) && ( * pThreadIDStr ) <= '9') )
             pThreadIDStr++;
 
-        killThread( atoi ( pThreadIDStr ) );
+        killThread( strtol ( pThreadIDStr, NULL, 10 ) );
+    }
+
+    if ( strcmp ( request, "lc\n" ) == 0 ) {
+        pthread_mutex_lock( & consoleLock );
+    }
+
+    if ( strcmp ( request, "uc\n" ) == 0 ) {
+        pthread_mutex_unlock( & consoleLock );
+    }
+
+    if ( strstr ( request, "lock " ) == request ) {
+        const char * pThreadIDStr = request + strlen ("lock ");
+        while ( ! (( * pThreadIDStr >= '0' ) && ( * pThreadIDStr ) <= '9') )
+            pThreadIDStr++;
+
+        lock( strtol ( pThreadIDStr, NULL, 10 ) );
+    }
+
+    if ( strstr ( request, "unlock " ) == request ) {
+        const char * pThreadIDStr = request + strlen ("unlock ");
+        while ( ! (( * pThreadIDStr >= '0' ) && ( * pThreadIDStr ) <= '9') )
+            pThreadIDStr++;
+
+        unlock( strtol ( pThreadIDStr, NULL, 10 ) );
+    }
+
+    if ( strcmp ( request, "help\n" ) == 0 ) {
+        printAdminHelpInfo();
     }
 
     return 1;
 }
 
-static void printAdminHelpInfo () {
-    pthread_mutex_lock( & consoleLock );
+void printAdminHelpInfo () {
+//    pthread_mutex_lock( & consoleLock );
 
     printf("Welcome to Command Line Interface for admin thread!\n");
     printf("Commands : \n");
-    printf("\tls Lists all threads active\n");
+    printf("\thelp - Prints the help section");
+    printf("\tls - Lists all threads active\n");
     printf("\t\t-A all threads\n");
     printf("\t\t-a all threads including hidden ones\n");
+    printf("\tlc - locks CLI console so that other threads cannot print on it\n");
+    printf("\tuc - unlocks CLI console so that other threads can print on it\n");
+
+    printf("\tlock [ID] - Locks a given thread's default lock\n");
+    printf("\tunlock [ID] - Unlocks a given thread's default lock\n");
+
     printf("\tkill [ID] - Kills thread with specified ID\n");
     printf("\tstop - Stops the program\n");
 
-    pthread_mutex_unlock( & consoleLock );
+    fflush(stdout);
+
+//    pthread_mutex_unlock( & consoleLock );
 }
 
-static void * adminThreadMain ( void * args ) {
+void * adminThreadMain ( void * args ) {
     printAdminHelpInfo();
 
     char * CLIBuffer = (char*) malloc ( sizeof ( char ) * CLI_BUFFER_SIZE );
     while (1) {
         memset ( CLIBuffer, 0, CLI_BUFFER_SIZE );
         read ( 0, CLIBuffer, CLI_BUFFER_SIZE );
-//        printf ( "%s\n", CLIBuffer );
         fflush( stdout );
 
         if ( 0 == treadAdminThreadRequest( CLIBuffer ) )
@@ -292,15 +382,6 @@ static void * adminThreadMain ( void * args ) {
     adminThreadInfo.threadRunning = 0;
 
     free ( CLIBuffer );
-}
-
-void threadPrintf ( const char * format, ... ) {
-    pthread_mutex_lock( & consoleLock );
-
-    va_list args;
-//    va_start ( args, format );
-
-    pthread_mutex_unlock( & consoleLock );
 }
 
 inline uint8 isAdminThreadRunning () {
@@ -323,13 +404,37 @@ ThreadResult createCLIAdminThread () {
     pthread_create( & pThreadInfo->pthreadHandle, NULL, adminThreadMain, pThreadCreateInfo );
 }
 
-static void * internalCreateThreadNoArgs ( void* pVoidArg ) {
+void * internalCreateThreadNoArgs ( void* pVoidArg ) {
     __auto_type pArg = ( ThreadCreateInfoNoArgs * ) pVoidArg;
 
     if ( pArg->sType != THREAD_STRUCTURE_TYPE_CREATE_INFO_NO_ARGS )
         return NULL;
 
     pArg->pFunc ();
+
+    removeThreadInfo( pArg->ID );
+    return NULL;
+}
+
+void * internalCreateThreadArgs ( void * pVoidArg ) {
+    __auto_type pArg = ( ThreadCreateInfoArgs * ) pVoidArg;
+
+    if ( pArg->sType != THREAD_STRUCTURE_TYPE_CREATE_INFO_ARGS )
+        return NULL;
+
+    pArg->pFunc ( pArg->argc, pArg->argv );
+
+    removeThreadInfo( pArg->ID );
+    return NULL;
+}
+
+void * internalCreateThreadArgPtr ( void * pVoidArg ) {
+    __auto_type pArg = ( ThreadCreateInfoArgPtr * ) pVoidArg;
+
+    if ( pArg->sType != THREAD_STRUCTURE_TYPE_CREATE_INFO_ARG_PTR )
+        return NULL;
+
+    pArg->pFunc ( pArg->data );
 
     removeThreadInfo( pArg->ID );
     return NULL;
@@ -350,4 +455,21 @@ ThreadResult stopThreadModule() {
     pthread_mutex_destroy( & consoleLock );
 
     return THREAD_SUCCESS;
+}
+
+void threadPutS( const char * string ) {
+    pthread_mutex_lock( & consoleLock );
+
+    printf("%s", string);
+    fflush( stdout );
+
+    pthread_mutex_unlock( & consoleLock );
+}
+
+void threadTryPutS( const char * string ) {
+    if ( pthread_mutex_trylock( & consoleLock ) == 0 ) {
+        printf("%s", string);
+        fflush(stdout);
+        pthread_mutex_unlock(&consoleLock);
+    }
 }

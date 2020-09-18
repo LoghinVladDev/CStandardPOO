@@ -1,1 +1,1 @@
-/usr/bin/cc -g   CMakeFiles/untitled2.dir/main.c.o CMakeFiles/untitled2.dir/nisteFunctii.c.o CMakeFiles/untitled2.dir/obj/thread_module/my_thread.c.o  -o untitled2 -lpthread 
+/usr/bin/c++  -g   CMakeFiles/untitled2.dir/main.c.o CMakeFiles/untitled2.dir/nisteFunctii.c.o CMakeFiles/untitled2.dir/obj/thread_module/my_thread.c.o CMakeFiles/untitled2.dir/obj/thread_module/threadClass.cpp.o  -o untitled2 -lpthread 
